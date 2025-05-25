@@ -1,0 +1,37 @@
+table, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td {
+    width: 100px;
+    height: 50px;
+    text-align: center;
+    background-color: #e0f0f4; 
+}
+
+/* Segunda fila */
+tr:nth-child(2) td {
+    background-color: #b0d6a7;
+}
+
+/* Tercer columna */
+td:nth-child(3) {
+    background-color: #dab6d9;
+}
+
+/* Celda (2,3) - intersección */
+tr:nth-child(2) td:nth-child(3) {
+    background-color: #ebe050;
+}
+
+/* Celda (3,2) - intersección */
+tr:nth-child(3) td:nth-child(2) {
+    background-color: #524c47;
+}
+
+/* Primera y última celda */
+tr:first-child td:first-child,
+tr:last-child td:last-child {
+    background-color: #f9c74f;
+}

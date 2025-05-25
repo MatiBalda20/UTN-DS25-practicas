@@ -1,0 +1,11 @@
+html {
+    background-color: rgb(192, 179, 2);
+}
+h1 {
+   color: #2a0da8;
+   font-style: italic;
+}
+ul {
+    background-color: #7d898a;
+    width: 100px;
+}

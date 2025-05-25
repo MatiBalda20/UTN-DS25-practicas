@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Funciones JS</title>
+    <link rel="stylesheet" href="16.css">
+</head>
+<body>
+
+    <h2>Portero Eléctrico</h2>
+
+    <div class="visores">
+        <input id="visorPiso" class="visor" placeholder="PISO" readonly>
+        <input id="visorDpto" class="visor" placeholder="DPTO" readonly>
+    </div>
+
+    <div class="teclado">
+        <button onclick="ingresarNumero('1')">1</button>
+        <button onclick="ingresarNumero('2')">2</button>
+        <button onclick="ingresarNumero('3')">3</button>
+        <button onclick="ingresarNumero('4')">4</button>
+        <button onclick="ingresarNumero('5')">5</button>
+        <button onclick="ingresarNumero('6')">6</button>
+        <button onclick="ingresarNumero('7')">7</button>
+        <button onclick="ingresarNumero('8')">8</button>
+        <button onclick="ingresarNumero('9')">9</button>
+        <button onclick="ingresarNumero('0')">0</button>
+
+        <button onclick="llamar()">Llamar</button>
+        <button onclick="borrar()">Borrar</button>
+    </div>
+
+    <div id="mensaje">[ Mensaje aparecerá aquí ]</div>
+    <script src="principal.js"></script>
+</body>
+</html>

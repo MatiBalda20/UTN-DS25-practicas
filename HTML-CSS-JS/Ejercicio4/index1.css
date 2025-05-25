@@ -1,0 +1,11 @@
+h1 {
+    font-style: italic;
+}
+p {
+    background-color: aqua;
+    width: 200px;
+}
+nav {
+    background-color: rgb(0, 255, 55);
+    width: 150px;
+}
