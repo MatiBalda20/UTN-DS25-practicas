@@ -5,5 +5,5 @@ export default function Fisica() {
     const { catalogo } = useOutletContext();
     const librosFisica = catalogo.filter(libro => libro.genero === "Física");
 
-    return <PaginaLibros tituloPagina="Física" libros={librosFisica} />;
+    return <PaginaLibros tituloPagina="Física" genero="physics"  />;
 }

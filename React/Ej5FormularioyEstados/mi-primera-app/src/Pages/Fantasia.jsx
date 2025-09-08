@@ -5,5 +5,5 @@ export default function Fantasia() {
     const { catalogo } = useOutletContext();
     const librosFantasia = catalogo.filter(libro => libro.genero === "Fantasía");
 
-    return <PaginaLibros tituloPagina="Fantasía" libros={librosFantasia} />;
+    return <PaginaLibros tituloPagina="Fantasía" genero="fantasy"  />;
 }
