@@ -1,287 +1,264 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookService = void 0;
-// Función simple para generar IDs únicos
-const generateId = () => {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-};
-// Mock database - datos de libros con tus datos reales
-const books = [
-    // FANTASÍA
-    {
-        id: generateId(),
-        titulo: "Harry Potter y la piedra filosofal",
-        autor: "J.K Rowling",
-        img: "/Img/harry1.jpg",
-        genero: "fantasia",
-        stock: 15,
-        precio: 25.99
-    },
-    {
-        id: generateId(),
-        titulo: "Harry Potter y la cámara secreta",
-        autor: "J.K Rowling",
-        img: "/Img/harry2.jpg",
-        genero: "fantasia",
-        stock: 12,
-        precio: 25.99
-    },
-    {
-        id: generateId(),
-        titulo: "Harry Potter y el prisionero de Azkaban",
-        autor: "J.K Rowling",
-        img: "/Img/harry3.jpg",
-        genero: "fantasia",
-        stock: 10,
-        precio: 25.99
-    },
-    {
-        id: generateId(),
-        titulo: "Harry Potter y el cáliz de fuego",
-        autor: "J.K Rowling",
-        img: "/Img/harry4.jpg",
-        genero: "fantasia",
-        stock: 8,
-        precio: 25.99
-    },
-    {
-        id: generateId(),
-        titulo: "Harry Potter y la Orden del Fénix",
-        autor: "J.K Rowling",
-        img: "/Img/harry5.jpg",
-        genero: "fantasia",
-        stock: 14,
-        precio: 25.99
-    },
-    {
-        id: generateId(),
-        titulo: "Harry Potter y el misterio del príncipe",
-        autor: "J.K Rowling",
-        img: "/Img/harry6.jpg",
-        genero: "fantasia",
-        stock: 9,
-        precio: 25.99
-    },
-    // FÍSICA
-    {
-        id: generateId(),
-        titulo: "El Bosón de Higgs",
-        autor: "Javier Santaolalla",
-        img: "/Img/boson .jpg",
-        genero: "fisica",
-        stock: 20,
-        precio: 22.50
-    },
-    {
-        id: generateId(),
-        titulo: "Física, conceptos y aplicaciones",
-        autor: "Paul E. Tippens",
-        img: "/Img/fisica1.jpg",
-        genero: "fisica",
-        stock: 18,
-        precio: 45.00
-    },
-    {
-        id: generateId(),
-        titulo: "El libro de la física",
-        autor: "Clifford A. Pickover",
-        img: "/Img/fisica2.jpg",
-        genero: "fisica",
-        stock: 16,
-        precio: 35.75
-    },
-    {
-        id: generateId(),
-        titulo: "Introducción a la física",
-        autor: "Alberto Rubio Ponce",
-        img: "/Img/fisica3.jpg",
-        genero: "fisica",
-        stock: 22,
-        precio: 28.90
-    },
-    {
-        id: generateId(),
-        titulo: "Física volumen 1",
-        autor: "Thomas A. Moore",
-        img: "/Img/fisica4.jpg",
-        genero: "fisica",
-        stock: 25,
-        precio: 52.00
-    },
-    {
-        id: generateId(),
-        titulo: "Física cuántica",
-        autor: "Carlos Sánchez del Río",
-        img: "/Img/fisica5.jpg",
-        genero: "fisica",
-        stock: 19,
-        precio: 38.50
-    },
-    // CIENCIA FICCIÓN
-    {
-        id: generateId(),
-        titulo: "Dune 1",
-        autor: "Frank Herbert",
-        img: "/Img/dune 1.jpg",
-        genero: "ciencia-ficcion",
-        stock: 30,
-        precio: 28.90
-    },
-    {
-        id: generateId(),
-        titulo: "El mesías de Dune",
-        autor: "Frank Herbert",
-        img: "/Img/dune2.jpg",
-        genero: "ciencia-ficcion",
-        stock: 25,
-        precio: 28.90
-    },
-    {
-        id: generateId(),
-        titulo: "Hijos de Dune",
-        autor: "Frank Herbert",
-        img: "/Img/dune3.jpg",
-        genero: "ciencia-ficcion",
-        stock: 20,
-        precio: 28.90
-    },
-    {
-        id: generateId(),
-        titulo: "Dios emperador de Dune",
-        autor: "Frank Herbert",
-        img: "/Img/dune4.jpg",
-        genero: "ciencia-ficcion",
-        stock: 18,
-        precio: 28.90
-    },
-    {
-        id: generateId(),
-        titulo: "Herejes de Dune",
-        autor: "Frank Herbert",
-        img: "/Img/dune5.jpg",
-        genero: "ciencia-ficcion",
-        stock: 15,
-        precio: 28.90
-    },
-    {
-        id: generateId(),
-        titulo: "Casa Capitular Dune",
-        autor: "Frank Herbert",
-        img: "/Img/dune6.jpg",
-        genero: "ciencia-ficcion",
-        stock: 12,
-        precio: 28.90
-    },
-    // POLICIALES
-    {
-        id: generateId(),
-        titulo: "Sherlock Holmes: Estudio en escarlata",
-        autor: "Sir Arthur Conan Doyle",
-        img: "/Img/holmes 1.jpg",
-        genero: "policiales",
-        stock: 24,
-        precio: 18.50
-    },
-    {
-        id: generateId(),
-        titulo: "Sherlock Holmes: El signo de los cuatro",
-        autor: "Sir Arthur Conan Doyle",
-        img: "/Img/holmes2.jpg",
-        genero: "policiales",
-        stock: 20,
-        precio: 18.50
-    },
-    {
-        id: generateId(),
-        titulo: "Sherlock Holmes: El sabueso de Baskerville",
-        autor: "Sir Arthur Conan Doyle",
-        img: "/Img/holmes3.jpg",
-        genero: "policiales",
-        stock: 22,
-        precio: 18.50
-    },
-    {
-        id: generateId(),
-        titulo: "Sherlock Holmes: El valle del terror",
-        autor: "Sir Arthur Conan Doyle",
-        img: "/Img/holmes4.jpg",
-        genero: "policiales",
-        stock: 18,
-        precio: 18.50
-    },
-    {
-        id: generateId(),
-        titulo: "El asedio",
-        autor: "Arturo Pérez-Reverte",
-        img: "/Img/holmes5.jpg",
-        genero: "policiales",
-        stock: 16,
-        precio: 22.90
-    },
-    {
-        id: generateId(),
-        titulo: "Cuentos policiales",
-        autor: "Edgar Allan Poe",
-        img: "/Img/holmes6.jpg",
-        genero: "policiales",
-        stock: 21,
-        precio: 16.75
-    }
-];
+const prisma_1 = require("../lib/prisma");
 class BookService {
     // Obtener todos los libros
-    getAllBooks() {
-        return books;
+    async getAllBooks() {
+        return await prisma_1.prisma.book.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
     }
     // Obtener libros por género con límite
-    getBooksByGenre(genero, limit = 12) {
-        const filteredBooks = books.filter(book => book.genero.toLowerCase() === genero.toLowerCase());
-        return filteredBooks.slice(0, limit);
+    async getBooksByGenre(genero, limit = 12) {
+        return await prisma_1.prisma.book.findMany({
+            where: {
+                genero: {
+                    equals: genero.toLowerCase(),
+                    mode: 'insensitive'
+                }
+            },
+            take: limit,
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
     }
     // Obtener libro por ID
-    getBookById(id) {
-        return books.find(book => book.id === id) || null;
+    async getBookById(id) {
+        return await prisma_1.prisma.book.findUnique({
+            where: { id }
+        });
     }
     // Crear nuevo libro
-    createBook(bookData) {
-        const newBook = {
-            id: generateId(),
-            ...bookData
+    async createBook(bookData) {
+        // Asegurar que la imagen tenga un valor por defecto si no se proporciona
+        const dataToCreate = {
+            ...bookData,
+            imagen: bookData.imagen || '/Img/placeholder.jpg'
         };
-        books.push(newBook);
-        return newBook;
+        return await prisma_1.prisma.book.create({
+            data: dataToCreate
+        });
     }
     // Actualizar libro
-    updateBook(id, updateData) {
-        const bookIndex = books.findIndex(book => book.id === id);
-        if (bookIndex === -1) {
+    async updateBook(id, updateData) {
+        try {
+            return await prisma_1.prisma.book.update({
+                where: { id },
+                data: updateData
+            });
+        }
+        catch (error) {
+            // Si el libro no existe, Prisma lanzará un error
             return null;
         }
-        books[bookIndex] = {
-            ...books[bookIndex],
-            ...updateData
-        };
-        return books[bookIndex];
     }
     // Eliminar libro
-    deleteBook(id) {
-        const bookIndex = books.findIndex(book => book.id === id);
-        if (bookIndex === -1) {
+    async deleteBook(id) {
+        try {
+            await prisma_1.prisma.book.delete({
+                where: { id }
+            });
+            return true;
+        }
+        catch (error) {
             return false;
         }
-        books.splice(bookIndex, 1);
-        return true;
     }
     // Buscar libros por título o autor
-    searchBooks(query) {
-        const searchTerm = query.toLowerCase();
-        return books.filter(book => book.titulo.toLowerCase().includes(searchTerm) ||
-            book.autor.toLowerCase().includes(searchTerm));
+    async searchBooks(query) {
+        return await prisma_1.prisma.book.findMany({
+            where: {
+                OR: [
+                    {
+                        titulo: {
+                            contains: query,
+                            mode: 'insensitive'
+                        }
+                    },
+                    {
+                        autor: {
+                            contains: query,
+                            mode: 'insensitive'
+                        }
+                    }
+                ]
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
     }
     // Obtener géneros únicos
-    getGenres() {
-        const genres = books.map(book => book.genero);
-        return Array.from(new Set(genres));
+    async getGenres() {
+        const books = await prisma_1.prisma.book.findMany({
+            select: {
+                genero: true
+            },
+            distinct: ['genero']
+        });
+        return books.map(book => book.genero);
+    }
+    // Seed inicial de datos (opcional - para poblar la BD)
+    async seedBooks() {
+        const booksToCreate = [
+            // FANTASÍA
+            {
+                titulo: "Harry Potter y la piedra filosofal",
+                autor: "J.K Rowling",
+                imagen: "/Img/harry1.jpg",
+                genero: "fantasia",
+            },
+            {
+                titulo: "Harry Potter y la cámara secreta",
+                autor: "J.K Rowling",
+                imagen: "/Img/harry2.jpg",
+                genero: "fantasia",
+            },
+            {
+                titulo: "Harry Potter y el prisionero de Azkaban",
+                autor: "J.K Rowling",
+                imagen: "/Img/harry3.jpg",
+                genero: "fantasia",
+            },
+            {
+                titulo: "Harry Potter y el cáliz de fuego",
+                autor: "J.K Rowling",
+                imagen: "/Img/harry4.jpg",
+                genero: "fantasia",
+            },
+            {
+                titulo: "Harry Potter y la Orden del Fénix",
+                autor: "J.K Rowling",
+                imagen: "/Img/harry5.jpg",
+                genero: "fantasia",
+            },
+            {
+                titulo: "Harry Potter y el misterio del príncipe",
+                autor: "J.K Rowling",
+                imagen: "/Img/harry6.jpg",
+                genero: "fantasia",
+            },
+            // FÍSICA
+            {
+                titulo: "El Bosón de Higgs",
+                autor: "Javier Santaolalla",
+                imagen: "/Img/boson .jpg",
+                genero: "fisica",
+            },
+            {
+                titulo: "Física, conceptos y aplicaciones",
+                autor: "Paul E. Tippens",
+                imagen: "/Img/fisica1.jpg",
+                genero: "fisica",
+            },
+            {
+                titulo: "El libro de la física",
+                autor: "Clifford A. Pickover",
+                imagen: "/Img/fisica2.jpg",
+                genero: "fisica",
+            },
+            {
+                titulo: "Introducción a la física",
+                autor: "Alberto Rubio Ponce",
+                imagen: "/Img/fisica3.jpg",
+                genero: "fisica",
+            },
+            {
+                titulo: "Física volumen 1",
+                autor: "Thomas A. Moore",
+                imagen: "/Img/fisica4.jpg",
+                genero: "fisica",
+            },
+            {
+                titulo: "Física cuántica",
+                autor: "Carlos Sánchez del Río",
+                imagen: "/Img/fisica5.jpg",
+                genero: "fisica",
+            },
+            // CIENCIA FICCIÓN
+            {
+                titulo: "Dune 1",
+                autor: "Frank Herbert",
+                imagen: "/Img/dune 1.jpg",
+                genero: "ciencia-ficcion",
+            },
+            {
+                titulo: "El mesías de Dune",
+                autor: "Frank Herbert",
+                imagen: "/Img/dune2.jpg",
+                genero: "ciencia-ficcion",
+            },
+            {
+                titulo: "Hijos de Dune",
+                autor: "Frank Herbert",
+                imagen: "/Img/dune3.jpg",
+                genero: "ciencia-ficcion",
+            },
+            {
+                titulo: "Dios emperador de Dune",
+                autor: "Frank Herbert",
+                imagen: "/Img/dune4.jpg",
+                genero: "ciencia-ficcion",
+            },
+            {
+                titulo: "Herejes de Dune",
+                autor: "Frank Herbert",
+                imagen: "/Img/dune5.jpg",
+                genero: "ciencia-ficcion",
+            },
+            {
+                titulo: "Casa Capitular Dune",
+                autor: "Frank Herbert",
+                imagen: "/Img/dune6.jpg",
+                genero: "ciencia-ficcion",
+            },
+            // POLICIALES
+            {
+                titulo: "Sherlock Holmes: Estudio en escarlata",
+                autor: "Sir Arthur Conan Doyle",
+                imagen: "/Img/holmes 1.jpg",
+                genero: "policiales",
+            },
+            {
+                titulo: "Sherlock Holmes: El signo de los cuatro",
+                autor: "Sir Arthur Conan Doyle",
+                imagen: "/Img/holmes2.jpg",
+                genero: "policiales",
+            },
+            {
+                titulo: "Sherlock Holmes: El sabueso de Baskerville",
+                autor: "Sir Arthur Conan Doyle",
+                imagen: "/Img/holmes3.jpg",
+                genero: "policiales",
+            },
+            {
+                titulo: "Sherlock Holmes: El valle del terror",
+                autor: "Sir Arthur Conan Doyle",
+                imagen: "/Img/holmes4.jpg",
+                genero: "policiales",
+            },
+            {
+                titulo: "El asedio",
+                autor: "Arturo Pérez-Reverte",
+                imagen: "/Img/holmes5.jpg",
+                genero: "policiales",
+            },
+            {
+                titulo: "Cuentos policiales",
+                autor: "Edgar Allan Poe",
+                imagen: "/Img/holmes6.jpg",
+                genero: "policiales",
+            }
+        ];
+        for (const book of booksToCreate) {
+            await prisma_1.prisma.book.create({
+                data: book
+            });
+        }
     }
 }
 exports.BookService = BookService;

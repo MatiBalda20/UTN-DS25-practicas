@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import bookRoutes from './routes/books';
+import userRoutes from './routes/users';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,8 +25,9 @@ app.use(express.json());
 // Ajusta la ruta según donde tengas las imágenes
 app.use('/Img', express.static(path.join(__dirname, '../../public/Img')));
 
-// Routes - solo libros
+// Routes
 app.use('/api/books', bookRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -40,6 +42,7 @@ app.get('/api/test', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📚 Books API: http://localhost:${PORT}/api/books`);
+    console.log(`👥 Users API: http://localhost:${PORT}/api/users`);
     console.log(`🌐 CORS configured for all origins`);
     console.log(`🖼️  Images served at: http://localhost:${PORT}/Img/`);
     console.log(`🔗 Test URL: http://localhost:${PORT}/api/books/genre/fisica`);

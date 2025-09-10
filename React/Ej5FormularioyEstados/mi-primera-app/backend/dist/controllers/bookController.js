@@ -5,180 +5,194 @@ const bookService_1 = require("../services/bookService");
 const bookService = new bookService_1.BookService();
 class BookController {
     // GET /api/books
-    getAllBooks(req, res) {
+    async getAllBooks(req, res) {
         try {
-            const books = bookService.getAllBooks();
-            res.json({
+            const books = await bookService.getAllBooks();
+            const response = {
                 success: true,
                 data: books,
                 count: books.length
-            });
+            };
+            res.json(response);
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al obtener los libros',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
-    // GET /api/books/genre/:genero
-    getBooksByGenre(req, res) {
+    // GET /api/books/genre/:genero - CON VALIDACIÓN ZOD
+    async getBooksByGenre(req, res) {
         try {
-            const { genero } = req.params;
+            const { genero } = req.params; // Ya validado por Zod
             const limit = parseInt(req.query.limit) || 12;
-            const books = bookService.getBooksByGenre(genero, limit);
-            res.json({
+            const books = await bookService.getBooksByGenre(genero, limit);
+            const response = {
                 success: true,
                 data: books,
                 count: books.length,
                 genre: genero,
                 limit
-            });
+            };
+            res.json(response);
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al obtener los libros por género',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
-    // GET /api/books/:id
-    getBookById(req, res) {
+    // GET /api/books/:id - CON VALIDACIÓN ZOD
+    async getBookById(req, res) {
         try {
-            const { id } = req.params;
-            const book = bookService.getBookById(id);
+            const { id } = req.params; // Ya validado por Zod (UUID válido)
+            const book = await bookService.getBookById(id);
             if (!book) {
-                res.status(404).json({
+                const response = {
                     success: false,
                     message: 'Libro no encontrado'
-                });
+                };
+                res.status(404).json(response);
                 return;
             }
-            res.json({
+            const response = {
                 success: true,
                 data: book
-            });
+            };
+            res.json(response);
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al obtener el libro',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
-    // POST /api/books
-    createBook(req, res) {
+    // POST /api/books - CON VALIDACIÓN ZOD ✅
+    async createBook(req, res) {
         try {
+            // Los datos ya están validados y transformados por el middleware de Zod
             const bookData = req.body;
-            // Validación básica
-            if (!bookData.titulo || !bookData.autor || !bookData.genero) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Los campos título, autor y género son obligatorios'
-                });
-                return;
-            }
-            const newBook = bookService.createBook(bookData);
-            res.status(201).json({
+            console.log('Datos del libro validados por Zod:', bookData);
+            const newBook = await bookService.createBook(bookData);
+            const response = {
                 success: true,
                 data: newBook,
                 message: 'Libro creado exitosamente'
-            });
+            };
+            res.status(201).json(response);
         }
         catch (error) {
-            res.status(500).json({
+            console.error('Error en createBook:', error);
+            const response = {
                 success: false,
                 message: 'Error al crear el libro',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
-    // PUT /api/books/:id
-    updateBook(req, res) {
+    // PUT /api/books/:id - CON VALIDACIÓN ZOD ✅
+    async updateBook(req, res) {
         try {
-            const { id } = req.params;
-            const updateData = req.body;
-            const updatedBook = bookService.updateBook(id, updateData);
+            const { id } = req.params; // Ya validado por Zod (UUID válido)
+            const updateData = req.body; // Ya validado por Zod
+            console.log('Datos de actualización validados por Zod:', updateData);
+            const updatedBook = await bookService.updateBook(id, updateData);
             if (!updatedBook) {
-                res.status(404).json({
+                const response = {
                     success: false,
                     message: 'Libro no encontrado'
-                });
+                };
+                res.status(404).json(response);
                 return;
             }
-            res.json({
+            const response = {
                 success: true,
                 data: updatedBook,
                 message: 'Libro actualizado exitosamente'
-            });
+            };
+            res.json(response);
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al actualizar el libro',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
-    // DELETE /api/books/:id
-    deleteBook(req, res) {
+    // DELETE /api/books/:id - CON VALIDACIÓN ZOD
+    async deleteBook(req, res) {
         try {
-            const { id } = req.params;
-            const deleted = bookService.deleteBook(id);
+            const { id } = req.params; // Ya validado por Zod (UUID válido)
+            const deleted = await bookService.deleteBook(id);
             if (!deleted) {
-                res.status(404).json({
+                const response = {
                     success: false,
                     message: 'Libro no encontrado'
-                });
+                };
+                res.status(404).json(response);
                 return;
             }
-            res.json({
+            const response = {
                 success: true,
                 message: 'Libro eliminado exitosamente'
-            });
+            };
+            res.json(response);
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al eliminar el libro',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
-    // GET /api/books/search?q=query
-    searchBooks(req, res) {
+    // GET /api/books/search?q=query - CON VALIDACIÓN ZOD
+    async searchBooks(req, res) {
         try {
-            const query = req.query.q;
+            const { q: query } = req.query; // Ya validado por Zod
             if (!query) {
-                res.status(400).json({
+                const response = {
                     success: false,
                     message: 'El parámetro de búsqueda "q" es obligatorio'
-                });
+                };
+                res.status(400).json(response);
                 return;
             }
-            const books = bookService.searchBooks(query);
-            res.json({
+            const books = await bookService.searchBooks(query);
+            const response = {
                 success: true,
                 data: books,
                 count: books.length,
-                query
-            });
+                query: query
+            };
+            res.json(response);
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al buscar libros',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
         }
     }
     // GET /api/books/genres
-    getGenres(req, res) {
+    async getGenres(req, res) {
         try {
-            const genres = bookService.getGenres();
+            const genres = await bookService.getGenres();
             res.json({
                 success: true,
                 data: genres,
@@ -186,11 +200,31 @@ class BookController {
             });
         }
         catch (error) {
-            res.status(500).json({
+            const response = {
                 success: false,
                 message: 'Error al obtener los géneros',
                 error: error instanceof Error ? error.message : 'Error desconocido'
-            });
+            };
+            res.status(500).json(response);
+        }
+    }
+    // POST /api/books/seed - Endpoint para poblar la BD con datos iniciales
+    async seedBooks(req, res) {
+        try {
+            await bookService.seedBooks();
+            const response = {
+                success: true,
+                message: 'Base de datos poblada con libros iniciales'
+            };
+            res.json(response);
+        }
+        catch (error) {
+            const response = {
+                success: false,
+                message: 'Error al poblar la base de datos',
+                error: error instanceof Error ? error.message : 'Error desconocido'
+            };
+            res.status(500).json(response);
         }
     }
 }

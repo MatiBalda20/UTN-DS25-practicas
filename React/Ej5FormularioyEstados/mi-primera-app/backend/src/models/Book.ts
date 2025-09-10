@@ -1,30 +1,36 @@
+// Book interfaces
 export interface Book {
     id: string;
     titulo: string;
     autor: string;
-    img: string;
+    imagen: string;
     genero: string;
-    isbn?: string;
-    descripcion?: string;
-    añoPublicacion?: number;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface CreateBookInput {
     titulo: string;
     autor: string;
-    img: string;
+    imagen: string;
     genero: string;
-    isbn?: string;
-    descripcion?: string;
-    añoPublicacion?: number;
 }
 
 export interface UpdateBookInput {
     titulo?: string;
     autor?: string;
-    img?: string;
+    imagen?: string;
     genero?: string;
-    isbn?: string;
-    descripcion?: string;
-    añoPublicacion?: number;
+}
+
+// Response types para Book
+export interface BookResponse {
+    success: boolean;
+    data?: Book | Book[];
+    message?: string;
+    error?: string;
+    count?: number;
+    genre?: string;
+    limit?: number;
+    query?: string;
 }
