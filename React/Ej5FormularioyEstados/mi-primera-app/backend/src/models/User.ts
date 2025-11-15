@@ -8,6 +8,7 @@ export interface User {
     password: string;
     createdAt: Date;
     updatedAt: Date;
+    role: String;
 }
 
 export interface CreateUserInput {
@@ -43,7 +44,10 @@ export interface LoginInput {
 
 export interface LoginResponse {
     success: boolean;
-    data?: Omit<User, 'password'>;
+    data?: {
+        user: Omit<User, 'password'>;
+        token: string;
+    };
     message?: string;
     error?: string;
 }

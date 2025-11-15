@@ -226,23 +226,4 @@ export class BookController {
             res.status(500).json(response);
         }
     }
-
-    // POST /api/books/seed - Endpoint para poblar la BD con datos iniciales
-    async seedBooks(req: Request, res: Response): Promise<void> {
-        try {
-            await bookService.seedBooks();
-            const response: BookResponse = {
-                success: true,
-                message: 'Base de datos poblada con libros iniciales'
-            };
-            res.json(response);
-        } catch (error) {
-            const response: BookResponse = {
-                success: false,
-                message: 'Error al poblar la base de datos',
-                error: error instanceof Error ? error.message : 'Error desconocido'
-            };
-            res.status(500).json(response);
-        }
-    }
 }

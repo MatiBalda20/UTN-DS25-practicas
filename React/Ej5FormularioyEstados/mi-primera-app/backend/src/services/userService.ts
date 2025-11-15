@@ -1,11 +1,12 @@
+// src/services/userService.ts
 import { prisma } from '../lib/prisma';
 import { User, CreateUserInput, UpdateUserInput } from '../types';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export class UserService {
     private readonly SALT_ROUNDS = 10;
 
-    // Obtener todos los usuarios (sin contraseñas)
     async getAllUsers(): Promise<Omit<User, 'password'>[]> {
         const users = await prisma.user.findMany({
             orderBy: {
@@ -13,11 +14,9 @@ export class UserService {
             }
         });
 
-        // Remover contraseñas antes de devolver
         return users.map(({ password, ...user }) => user);
     }
 
-    // Obtener usuario por ID (sin contraseña)
     async getUserById(id: string): Promise<Omit<User, 'password'> | null> {
         const user = await prisma.user.findUnique({
             where: { id }
@@ -29,16 +28,13 @@ export class UserService {
         return userWithoutPassword;
     }
 
-    // Obtener usuario por email (con contraseña - para login)
     async getUserByEmail(email: string): Promise<User | null> {
         return await prisma.user.findUnique({
             where: { email }
         });
     }
 
-    // Crear nuevo usuario
-    async createUser(userData: CreateUserInput): Promise<Omit<User, 'password'>> {
-        // Verificar si el email ya existe
+    async createUser(userData: CreateUserInput & { role?: 'USER' | 'ADMIN' }): Promise<Omit<User, 'password'>> {
         const existingUser = await prisma.user.findUnique({
             where: { email: userData.email }
         });
@@ -47,31 +43,29 @@ export class UserService {
             throw new Error('El email ya está registrado');
         }
 
-        // Hash de la contraseña
         const hashedPassword = await bcrypt.hash(userData.password, this.SALT_ROUNDS);
 
-        // Crear usuario
         const user = await prisma.user.create({
             data: {
-                ...userData,
-                password: hashedPassword
+                nombre: userData.nombre,
+                apellido: userData.apellido,
+                email: userData.email,
+                password: hashedPassword,
+                fechaNacimiento: userData.fechaNacimiento,
+                role: userData.role || 'USER'
             }
         });
 
-        // Devolver usuario sin contraseña
         const { password, ...userWithoutPassword } = user;
         return userWithoutPassword;
     }
 
-    // Actualizar usuario
     async updateUser(id: string, updateData: UpdateUserInput): Promise<Omit<User, 'password'> | null> {
         try {
-            // Si se está actualizando la contraseña, hashearla
             if (updateData.password) {
                 updateData.password = await bcrypt.hash(updateData.password, this.SALT_ROUNDS);
             }
 
-            // Si se está actualizando el email, verificar que no exista
             if (updateData.email) {
                 const existingUser = await prisma.user.findFirst({
                     where: {
@@ -100,7 +94,6 @@ export class UserService {
         }
     }
 
-    // Eliminar usuario
     async deleteUser(id: string): Promise<boolean> {
         try {
             await prisma.user.delete({
@@ -112,13 +105,12 @@ export class UserService {
         }
     }
 
-    // Verificar contraseña (para login futuro)
     async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
         return await bcrypt.compare(plainPassword, hashedPassword);
     }
 
-    // Login (básico - sin JWT por ahora)
-    async login(email: string, password: string): Promise<Omit<User, 'password'> | null> {
+    // Login con JWT
+    async login(email: string, password: string): Promise<{ user: Omit<User, 'password'>, token: string } | null> {
         const user = await this.getUserByEmail(email);
         
         if (!user) {
@@ -131,7 +123,21 @@ export class UserService {
             return null;
         }
 
+        // Generar JWT
+        const token = (jwt as any).sign(
+            {
+                id: user.id,
+                email: user.email,
+                role: user.role
+                },
+                process.env.JWT_SECRET!, // Asegurar que es string
+                { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } // Valor por defecto
+        );
         const { password: _, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+        
+        return {
+            user: userWithoutPassword,
+            token
+        };
     }
 }

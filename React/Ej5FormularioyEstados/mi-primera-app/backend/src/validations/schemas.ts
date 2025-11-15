@@ -1,7 +1,6 @@
 // src/validations/schemas.ts
 import { z } from 'zod';
 
-// Géneros válidos para libros
 const validGenres = [
     'fantasia',
     'fisica', 
@@ -13,7 +12,7 @@ const validGenres = [
     'biografia'
 ] as const;
 
-// Esquemas para Book
+// BOOK SCHEMAS
 export const createBookSchema = z.object({
     titulo: z.string()
         .min(1, 'El título es obligatorio')
@@ -29,21 +28,12 @@ export const createBookSchema = z.object({
     imagen: z.string()
         .url('La imagen debe ser una URL válida')
         .min(1, 'La imagen es obligatoria')
-        .refine((url) => {
-            // Validar que la URL termine con una extensión de imagen
-            const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
-            const urlLower = url.toLowerCase();
-            return imageExtensions.some(ext => urlLower.includes(ext)) || 
-                    urlLower.includes('placeholder') || 
-                    urlLower.includes('picsum') ||
-                    urlLower.includes('unsplash');
-        }, 'La URL debe apuntar a una imagen válida (jpg, png, gif, webp, etc.)')
 });
 
 export const updateBookSchema = createBookSchema.partial();
 
 export const bookParamsSchema = z.object({
-    id: z.string().uuid('ID de libro inválido')
+    id: z.string().min(1, 'El ID es requerido')
 });
 
 export const bookGenreParamsSchema = z.object({
@@ -58,7 +48,7 @@ export const bookQuerySchema = z.object({
         .pipe(z.number().min(1).max(50))
 });
 
-// Esquemas para User
+// USER SCHEMAS CON ROLES
 export const createUserSchema = z.object({
     nombre: z.string()
         .min(1, 'El nombre es obligatorio')
@@ -97,7 +87,8 @@ export const createUserSchema = z.object({
             const today = new Date();
             const age = today.getFullYear() - date.getFullYear();
             return age >= 13 && age <= 120;
-        }, 'Debes tener entre 13 y 120 años')
+        }, 'Debes tener entre 13 y 120 años'),
+    role: z.enum(['USER', 'ADMIN']).optional().default('USER')
 });
 
 export const updateUserSchema = createUserSchema.partial();
@@ -115,7 +106,6 @@ export const loginSchema = z.object({
         .min(1, 'La contraseña es obligatoria')
 });
 
-// Tipos derivados de los esquemas
 export type CreateBookInput = z.infer<typeof createBookSchema>;
 export type UpdateBookInput = z.infer<typeof updateBookSchema>;
 export type CreateUserInput = z.infer<typeof createUserSchema>;

@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginSchema = exports.userParamsSchema = exports.updateUserSchema = exports.createUserSchema = exports.bookQuerySchema = exports.bookGenreParamsSchema = exports.bookParamsSchema = exports.updateBookSchema = exports.createBookSchema = void 0;
 // src/validations/schemas.ts
 const zod_1 = require("zod");
-// Géneros válidos para libros
 const validGenres = [
     'fantasia',
     'fisica',
@@ -14,7 +13,7 @@ const validGenres = [
     'historia',
     'biografia'
 ];
-// Esquemas para Book
+// BOOK SCHEMAS
 exports.createBookSchema = zod_1.z.object({
     titulo: zod_1.z.string()
         .min(1, 'El título es obligatorio')
@@ -30,19 +29,10 @@ exports.createBookSchema = zod_1.z.object({
     imagen: zod_1.z.string()
         .url('La imagen debe ser una URL válida')
         .min(1, 'La imagen es obligatoria')
-        .refine((url) => {
-        // Validar que la URL termine con una extensión de imagen
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
-        const urlLower = url.toLowerCase();
-        return imageExtensions.some(ext => urlLower.includes(ext)) ||
-            urlLower.includes('placeholder') ||
-            urlLower.includes('picsum') ||
-            urlLower.includes('unsplash');
-    }, 'La URL debe apuntar a una imagen válida (jpg, png, gif, webp, etc.)')
 });
 exports.updateBookSchema = exports.createBookSchema.partial();
 exports.bookParamsSchema = zod_1.z.object({
-    id: zod_1.z.string().uuid('ID de libro inválido')
+    id: zod_1.z.string().min(1, 'El ID es requerido')
 });
 exports.bookGenreParamsSchema = zod_1.z.object({
     genero: zod_1.z.enum(validGenres)
@@ -54,7 +44,7 @@ exports.bookQuerySchema = zod_1.z.object({
         .transform((val) => val ? parseInt(val) : 12)
         .pipe(zod_1.z.number().min(1).max(50))
 });
-// Esquemas para User
+// USER SCHEMAS CON ROLES
 exports.createUserSchema = zod_1.z.object({
     nombre: zod_1.z.string()
         .min(1, 'El nombre es obligatorio')
@@ -93,7 +83,8 @@ exports.createUserSchema = zod_1.z.object({
         const today = new Date();
         const age = today.getFullYear() - date.getFullYear();
         return age >= 13 && age <= 120;
-    }, 'Debes tener entre 13 y 120 años')
+    }, 'Debes tener entre 13 y 120 años'),
+    role: zod_1.z.enum(['USER', 'ADMIN']).optional().default('USER')
 });
 exports.updateUserSchema = exports.createUserSchema.partial();
 exports.userParamsSchema = zod_1.z.object({
