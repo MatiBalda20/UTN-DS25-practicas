@@ -98,3 +98,13 @@ h2 {
 #pie a:hover {
   text-decoration: underline;
 }
+
+.Fav-card-button.Fav {
+  background-color: red;
+  cursor: pointer;
+}
+
+.Fav-card-button {
+  background-color: #9acd32;
+  cursor: pointer;
+}
