@@ -1,5 +1,6 @@
+// src/pages/Registro.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
@@ -11,7 +12,7 @@ const Registro = () => {
         fechaNacimiento: '',
         email: '',
         password: '',
-        tema: ''
+        role: 'USER' // Por defecto USER
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -31,34 +32,29 @@ const Registro = () => {
         setSuccess(false);
         setLoading(true);
 
-        // Remover el campo tema antes de enviar, ya que no está en el modelo User
-        const { tema, ...userData } = formData;
-
         try {
             const response = await fetch(`${API_BASE_URL}/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(userData)
+                body: JSON.stringify(formData)
             });
 
             const data = await response.json();
 
             if (data.success) {
                 setSuccess(true);
-                // Limpiar el formulario
                 setFormData({
                     nombre: '',
                     apellido: '',
                     fechaNacimiento: '',
                     email: '',
                     password: '',
-                    tema: ''
+                    role: 'USER'
                 });
-                // Redirigir después de 2 segundos
                 setTimeout(() => {
-                    navigate('/');
+                    navigate('/login');
                 }, 2000);
             } else {
                 setError(data.message || 'Error al registrar el usuario');
@@ -145,31 +141,26 @@ const Registro = () => {
                         minLength="6"
                         className="w-full border border-gray-300 rounded px-3 py-2" 
                     />
-                    <small className="text-gray-500">Mínimo 6 caracteres</small>
+                    <small className="text-gray-500">
+                        Mínimo 6 caracteres (1 mayúscula, 1 minúscula, 1 número)
+                    </small>
                 </div>
                 
                 <div>
-                    <label htmlFor="tema" className="block font-semibold">Tema Favorito (opcional):</label>
+                    <label htmlFor="role" className="block font-semibold">Tipo de Cuenta:</label>
                     <select 
-                        id="tema" 
-                        name="tema" 
-                        value={formData.tema}
+                        id="role" 
+                        name="role" 
+                        value={formData.role}
                         onChange={handleChange}
                         disabled={loading}
                         className="w-full border border-gray-300 rounded px-3 py-2"
                     >
-                        <option value="">-- Seleccionar --</option>
-                        <option value="fantasia">Fantasía</option>
-                        <option value="fisica">Física</option>
-                        <option value="ciencia_ficcion">Ciencia Ficción</option>
-                        <option value="policiales">Policiales</option>
-                        <option value="romance">Romance</option>
-                        <option value="terror">Terror</option>
-                        <option value="historia">Historia</option>
-                        <option value="biografia">Biografía</option>
+                        <option value="USER">Usuario Regular</option>
+                        <option value="ADMIN">Administrador</option>
                     </select>
                     <small className="text-gray-500">
-                        Este campo es solo informativo y no se guardará en tu perfil
+                        Los administradores tienen permisos adicionales
                     </small>
                 </div>
                 
@@ -181,7 +172,7 @@ const Registro = () => {
                 
                 {success && (
                     <div className="p-4 bg-green-100 border border-green-400 text-green-700 rounded text-center">
-                        ✅ ¡Registro exitoso! Redirigiendo...
+                        ✅ ¡Registro exitoso! Redirigiendo al login...
                     </div>
                 )}
                 
@@ -189,9 +180,18 @@ const Registro = () => {
                     <input
                         type="submit"
                         value={loading ? "Registrando..." : "Registrarse"}
-                        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50 cursor-pointer"
+                        className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition disabled:opacity-50 cursor-pointer w-full"
                         disabled={loading}
                     />
+                </div>
+
+                <div className="text-center mt-4">
+                    <p className="text-gray-600">
+                        ¿Ya tienes cuenta?{' '}
+                        <Link to="/login" className="text-blue-500 hover:underline">
+                            Inicia sesión aquí
+                        </Link>
+                    </p>
                 </div>
             </form>
         </div>
