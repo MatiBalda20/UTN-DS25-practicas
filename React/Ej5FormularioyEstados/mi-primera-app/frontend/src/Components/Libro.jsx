@@ -7,16 +7,11 @@ const Libro = ({ id, titulo, autor, img, imagen, onDelete }) => {
     const user = getUserFromToken();
     const isAdmin = user?.role === 'ADMIN';
     
-    const [favorito, setFavorito] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     const handleImageError = (e) => {
         console.log('Error cargando imagen:', e.target.src);
         e.target.src = 'https://via.placeholder.com/150x200?text=Sin+Portada';
-    };
-
-    const handleFav = () => {
-        setFavorito(!favorito);
     };
 
     const handleDelete = async () => {
@@ -66,13 +61,6 @@ const Libro = ({ id, titulo, autor, img, imagen, onDelete }) => {
             />
             
             <div className="w-full space-y-2">
-                <button 
-                    className={ButtonClass} 
-                    onClick={handleFav}
-                >
-                    {favorito ? '★ Favorito' : 'Añadir ★'}
-                </button>
-
                 {/* Botón de eliminar - solo visible para ADMIN */}
                 {isAdmin && (
                     <button 
