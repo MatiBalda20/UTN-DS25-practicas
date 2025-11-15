@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { getUserFromToken } from "../helpers/auth";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 const Libro = ({ id, titulo, autor, img, imagen, onDelete }) => {
     const imagenSrc = imagen || img;
     const user = getUserFromToken();
@@ -22,7 +24,7 @@ const Libro = ({ id, titulo, autor, img, imagen, onDelete }) => {
         setDeleting(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:3001/api/books/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/books/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -44,10 +46,6 @@ const Libro = ({ id, titulo, autor, img, imagen, onDelete }) => {
             setDeleting(false);
         }
     };
-
-    const ButtonClass = favorito
-        ? 'Fav-card-button Fav'
-        : 'Fav-card-button';
 
     return (
         <div className="w-52 bg-white shadow-md rounded-lg p-4 text-center flex flex-col items-center transition hover:shadow-lg">
