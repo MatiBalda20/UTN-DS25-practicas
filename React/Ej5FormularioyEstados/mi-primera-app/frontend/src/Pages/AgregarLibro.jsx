@@ -1,110 +1,124 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// React Hook Form + Yup
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { bookSchema } from '../validations/bookSchema';
+
 const API_BASE_URL = 'http://localhost:3001/api';
 
 export default function AgregarLibro() {
     const navigate = useNavigate();
-    const [nuevoLibro, setNuevoLibro] = useState({
-        titulo: '',
-        autor: '',
-        genero: '',
-        imagen: '',
-    });
+
+    // Estados para respuesta del servidor
     const [exito, setExito] = useState(false);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [serverError, setServerError] = useState('');
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setNuevoLibro(prev => ({ ...prev, [name]: value }));
-    };
+    // Inicializar RHF
+    const {
+        register,
+        handleSubmit,
+        watch,
+        reset,
+        formState: { errors, isSubmitting }
+    } = useForm({
+        resolver: yupResolver(bookSchema),
+        defaultValues: {
+            titulo: '',
+            autor: '',
+            genero: '',
+            imagen: ''
+        }
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+    const imagenUrl = watch('imagen');
+
+    const onSubmit = async (data) => {
+        setServerError('');
         setExito(false);
-        setLoading(true);
 
-        if (nuevoLibro.titulo && nuevoLibro.autor && nuevoLibro.genero && nuevoLibro.imagen) {
-            try {
-                const response = await fetch(`${API_BASE_URL}/books`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(nuevoLibro)
-                });
+        try {
+            const token = localStorage.getItem('token');
 
-                const data = await response.json();
+            const response = await fetch(`${API_BASE_URL}/books`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
 
-                if (data.success) {
-                    setExito(true);
-                    // Limpiar el formulario
-                    setNuevoLibro({
-                        titulo: '',
-                        autor: '',
-                        genero: '',
-                        imagen: '',
-                    });
-                    // Redirigir después de 2 segundos
-                    setTimeout(() => {
-                        navigate('/');
-                    }, 2000);
-                } else {
-                    setError(data.message || 'Error al agregar el libro');
-                }
-            } catch (err) {
-                setError('Error de conexión con el servidor');
-                console.error('Error:', err);
-            } finally {
-                setLoading(false);
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Error del servidor');
             }
-        } else {
-            setError('Todos los campos son obligatorios');
-            setLoading(false);
+
+            if (responseData.success) {
+                setExito(true);
+                reset();
+                setTimeout(() => navigate('/'), 2000);
+            } else {
+                setServerError(responseData.message || 'Error al agregar el libro');
+            }
+        } catch (err) {
+            setServerError(err.message || 'Error de conexión con el servidor');
+            console.error(err);
         }
     };
+
+    const getErrorClass = (field) =>
+        errors[field] ? 'border-red-500' : 'border-gray-300';
 
     return (
         <div className="p-6 max-w-xl mx-auto bg-white shadow-lg rounded-lg mt-10">
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
                 Agregar nuevo libro
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+                {/* TÍTULO */}
                 <div>
                     <label className="block mb-1 font-semibold text-gray-700">Título</label>
                     <input
                         type="text"
-                        name="titulo"
-                        value={nuevoLibro.titulo}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        required
-                        disabled={loading}
+                        {...register("titulo")}
+                        className={`w-full p-2 border rounded ${getErrorClass('titulo')}`}
+                        disabled={isSubmitting}
                     />
+                    {errors.titulo && (
+                        <span className="text-red-600 text-sm mt-1">
+                            {errors.titulo.message}
+                        </span>
+                    )}
                 </div>
+
+                {/* AUTOR */}
                 <div>
                     <label className="block mb-1 font-semibold text-gray-700">Autor</label>
                     <input
                         type="text"
-                        name="autor"
-                        value={nuevoLibro.autor}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        required
-                        disabled={loading}
+                        {...register("autor")}
+                        className={`w-full p-2 border rounded ${getErrorClass('autor')}`}
+                        disabled={isSubmitting}
                     />
+                    {errors.autor && (
+                        <span className="text-red-600 text-sm mt-1">
+                            {errors.autor.message}
+                        </span>
+                    )}
                 </div>
+
+                {/* GÉNERO */}
                 <div>
                     <label className="block mb-1 font-semibold text-gray-700">Género</label>
                     <select
-                        name="genero"
-                        value={nuevoLibro.genero}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                        required
-                        disabled={loading}
+                        {...register("genero")}
+                        className={`w-full p-2 border rounded ${getErrorClass('genero')}`}
+                        disabled={isSubmitting}
                     >
                         <option value="">-- Seleccionar --</option>
                         <option value="fantasia">Fantasía</option>
@@ -116,31 +130,45 @@ export default function AgregarLibro() {
                         <option value="historia">Historia</option>
                         <option value="biografia">Biografía</option>
                     </select>
+                    {errors.genero && (
+                        <span className="text-red-600 text-sm mt-1">
+                            {errors.genero.message}
+                        </span>
+                    )}
                 </div>
+
+                {/* IMAGEN */}
                 <div>
-                    <label className="block mb-1 font-semibold text-gray-700">URL de la Imagen</label>
+                    <label className="block mb-1 font-semibold text-gray-700">
+                        URL de la Imagen
+                    </label>
                     <input
                         type="url"
-                        name="imagen"
-                        value={nuevoLibro.imagen}
-                        onChange={handleChange}
+                        {...register("imagen")}
                         placeholder="https://ejemplo.com/imagen.jpg"
-                        className="w-full p-2 border border-gray-300 rounded"
-                        required
-                        disabled={loading}
+                        className={`w-full p-2 border rounded ${getErrorClass('imagen')}`}
+                        disabled={isSubmitting}
                     />
-                    <small className="text-gray-500 text-sm">
-                        Ingresa la URL de la imagen de la portada del libro
-                    </small>
+                    {errors.imagen ? (
+                        <span className="text-red-600 text-sm mt-1">
+                            {errors.imagen.message}
+                        </span>
+                    ) : (
+                        <small className="text-gray-500 text-sm">
+                            Ingresa la URL de la imagen de la portada del libro
+                        </small>
+                    )}
                 </div>
-                
-                {/* Vista previa de la imagen */}
-                {nuevoLibro.imagen && (
+
+                {/* VISTA PREVIA */}
+                {imagenUrl && !errors.imagen && (
                     <div className="mt-4">
-                        <label className="block mb-1 font-semibold text-gray-700">Vista previa:</label>
-                        <img 
-                            src={nuevoLibro.imagen} 
-                            alt="Vista previa" 
+                        <label className="block mb-1 font-semibold text-gray-700">
+                            Vista previa:
+                        </label>
+                        <img
+                            src={imagenUrl}
+                            alt="Vista previa"
                             className="w-32 h-48 object-cover border border-gray-300 rounded shadow-sm"
                             onError={(e) => {
                                 e.target.style.display = 'none';
@@ -152,18 +180,19 @@ export default function AgregarLibro() {
                 <button
                     type="submit"
                     className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
-                    disabled={loading}
+                    disabled={isSubmitting}
                 >
-                    {loading ? 'Agregando...' : 'Agregar libro'}
+                    {isSubmitting ? 'Agregando...' : 'Agregar libro'}
                 </button>
             </form>
-            
-            {error && (
+
+            {/* MENSAJES */}
+            {serverError && (
                 <div className="mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded text-center">
-                    ❌ {error}
+                    ❌ {serverError}
                 </div>
             )}
-            
+
             {exito && (
                 <div className="mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded text-center">
                     ✅ ¡Libro agregado con éxito! Redirigiendo...
