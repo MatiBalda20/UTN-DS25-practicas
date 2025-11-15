@@ -125,10 +125,6 @@ export default function AgregarLibro() {
                         <option value="fisica">Física</option>
                         <option value="ciencia-ficcion">Ciencia Ficción</option>
                         <option value="policiales">Policiales</option>
-                        <option value="romance">Romance</option>
-                        <option value="terror">Terror</option>
-                        <option value="historia">Historia</option>
-                        <option value="biografia">Biografía</option>
                     </select>
                     {errors.genero && (
                         <span className="text-red-600 text-sm mt-1">
