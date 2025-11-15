@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 // Para Vite, usar URL completa es más directo
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function useLibrosPorGenero(genero, limit = 12) {
     const [libros, setLibros] = useState([]);
